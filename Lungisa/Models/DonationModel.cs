@@ -8,7 +8,7 @@
         public decimal? Amount { get; set; } // nullable decimal
         public DateTime Timestamp { get; set; } = DateTime.UtcNow;
 
-        public string Status { get; set; } 
+        public string Status { get; set; }
 
         // For form binding
         public string FirstName { get; set; }

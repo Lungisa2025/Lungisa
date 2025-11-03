@@ -8,7 +8,7 @@
         public string LastName { get; set; }
         public string Email { get; set; }
         public string PaymentId { get; set; }
-        public string Status { get; set; } = "Pending";
+/*        public string Status { get; set; } = "Pending";*/
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     }
 

@@ -280,6 +280,7 @@ namespace Lungisa.Services
 
         // ===================== DONATIONS =====================
         // Save a new donation
+        // Save a new donation
         public async Task SaveDonation(DonationModel donation)
         {
             await _firebaseClient.Child("Donations").PostAsync(donation);
@@ -288,43 +289,26 @@ namespace Lungisa.Services
         // Fetch all donations
         public async Task<List<DonationModel>> GetDonations()
         {
-            var donationsData = await _firebaseClient
-                .Child("Donations")
-                .OnceAsync<dynamic>();
-
+            var donationsData = await _firebaseClient.Child("Donations").OnceAsync<dynamic>();
             var donations = new List<DonationModel>();
 
             foreach (var d in donationsData)
             {
                 var obj = d.Object;
-
-                // Safely parse timestamp
                 DateTime timestamp;
                 try
                 {
-                    if (obj.timestamp is long l) // stored as Unix milliseconds
+                    if (obj.timestamp is long l)
                         timestamp = DateTimeOffset.FromUnixTimeMilliseconds(l).UtcDateTime;
                     else if (obj.timestamp is string s && DateTime.TryParse(s, out DateTime dt))
                         timestamp = dt;
                     else
                         timestamp = DateTime.UtcNow;
                 }
-                catch
-                {
-                    timestamp = DateTime.UtcNow;
-                }
+                catch { timestamp = DateTime.UtcNow; }
 
-                // Safely parse amount
                 decimal amount = 0;
-                try
-                {
-                    if (obj.Amount != null)
-                        amount = Convert.ToDecimal(obj.Amount);
-                }
-                catch
-                {
-                    amount = 0;
-                }
+                try { if (obj.Amount != null) amount = Convert.ToDecimal(obj.Amount); } catch { amount = 0; }
 
                 donations.Add(new DonationModel
                 {
@@ -332,7 +316,7 @@ namespace Lungisa.Services
                     Email = obj.Email ?? "",
                     Amount = amount,
                     Timestamp = timestamp,
-                    Status = obj.Status ?? "Pending",
+/*                    Status = obj.Status ?? "Pending",*/
                     FirstName = obj.FirstName ?? "",
                     LastName = obj.LastName ?? "",
                     PayFastPaymentId = obj.PayFastPaymentId ?? "",
@@ -343,6 +327,37 @@ namespace Lungisa.Services
 
             return donations;
         }
+        public async Task<List<(string Key, DonationModel Donation)>> GetDonationsWithKeys()
+        {
+            var donationsData = await _firebaseClient.Child("Donations").OnceAsync<DonationModel>();
+            return donationsData.Select(d => (d.Key, d.Object)).ToList();
+        }
+        public async Task<DonationModel> GetDonationByMPaymentId(string mPaymentId)
+        {
+            var donations = await _firebaseClient.Child("Donations").OnceAsync<DonationModel>();
+            var record = donations.FirstOrDefault(d => d.Object.M_PaymentId == mPaymentId);
+            return record?.Object;
+        }
+
+        public async Task UpdateDonation(DonationModel donation)
+        {
+            var donations = await _firebaseClient.Child("Donations").OnceAsync<DonationModel>();
+            var existing = donations.FirstOrDefault(d => d.Object.M_PaymentId == donation.M_PaymentId);
+
+            if (existing != null)
+            {
+                await _firebaseClient.Child("Donations").Child(existing.Key).PutAsync(donation);
+            }
+            else
+            {
+                // fallback
+                await SaveDonation(donation);
+            }
+        }
+
+
+
+
         // ===================== ADMINS =====================
         public async Task SaveAdmin(string uid, string email, string firstName, string lastName, string phoneNumber, string role)
         {
