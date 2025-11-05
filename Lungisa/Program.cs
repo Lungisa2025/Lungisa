@@ -47,4 +47,8 @@ app.MapControllerRoute(
 
 app.MapControllers(); // or app.MapRazorPages();
 
+var port = Environment.GetEnvironmentVariable("PORT") ?? "5000";
+app.Urls.Add($"http://0.0.0.0:{port}");
+
+
 app.Run();
