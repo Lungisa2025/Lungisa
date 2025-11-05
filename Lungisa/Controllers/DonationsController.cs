@@ -39,7 +39,7 @@ namespace Lungisa.Controllers
                 Email = model.Email,
                 Amount = model.Amount,
                 Status = "Pending",
-                Timestamp = DateTime.UtcNow,
+                Timestamp = DateTime.UtcNow.AddHours(2), // use CreatedAt instead
                 M_PaymentId = mPaymentId
             };
 

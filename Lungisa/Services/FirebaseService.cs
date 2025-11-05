@@ -295,28 +295,28 @@ namespace Lungisa.Services
             foreach (var d in donationsData)
             {
                 var obj = d.Object;
-                DateTime timestamp;
+
+                DateTime timestamp = DateTime.UtcNow;
                 try
                 {
-                    if (obj.timestamp is long l)
-                        timestamp = DateTimeOffset.FromUnixTimeMilliseconds(l).UtcDateTime;
-                    else if (obj.timestamp is string s && DateTime.TryParse(s, out DateTime dt))
-                        timestamp = dt;
-                    else
-                        timestamp = DateTime.UtcNow;
+                    // If Firebase stores ISO string
+                    if (obj.Timestamp != null)
+                    {
+                        timestamp = DateTime.Parse(obj.Timestamp.ToString(), null, System.Globalization.DateTimeStyles.AdjustToUniversal);
+                    }
                 }
-                catch { timestamp = DateTime.UtcNow; }
-
-                decimal amount = 0;
-                try { if (obj.Amount != null) amount = Convert.ToDecimal(obj.Amount); } catch { amount = 0; }
+                catch
+                {
+                    timestamp = DateTime.UtcNow;
+                }
 
                 donations.Add(new DonationModel
                 {
                     DonorName = obj.DonorName ?? "",
                     Email = obj.Email ?? "",
-                    Amount = amount,
+                    Amount = obj.Amount != null ? Convert.ToDecimal(obj.Amount) : 0,
                     Timestamp = timestamp,
-/*                    Status = obj.Status ?? "Pending",*/
+                    Status = obj.Status ?? "Pending",
                     FirstName = obj.FirstName ?? "",
                     LastName = obj.LastName ?? "",
                     PayFastPaymentId = obj.PayFastPaymentId ?? "",
@@ -327,6 +327,7 @@ namespace Lungisa.Services
 
             return donations;
         }
+
         public async Task<List<(string Key, DonationModel Donation)>> GetDonationsWithKeys()
         {
             var donationsData = await _firebaseClient.Child("Donations").OnceAsync<DonationModel>();
@@ -341,19 +342,35 @@ namespace Lungisa.Services
 
         public async Task UpdateDonation(DonationModel donation)
         {
+            // Convert Timestamp to ISO string for Firebase
+            var data = new Dictionary<string, object>
+    {
+        { "DonorName", donation.DonorName ?? "" },
+        { "Email", donation.Email ?? "" },
+        { "Amount", donation.Amount },
+        { "Status", donation.Status ?? "Pending" },
+        { "PayFastPaymentId", donation.PayFastPaymentId ?? "" },
+        { "Timestamp", donation.Timestamp.ToString("o") }, // ISO 8601 format
+        { "FirstName", donation.FirstName ?? "" },
+        { "LastName", donation.LastName ?? "" },
+        { "M_PaymentId", donation.M_PaymentId ?? "" },
+        { "PaymentReference", donation.PaymentReference ?? "" }
+    };
+
+            // Find existing donation
             var donations = await _firebaseClient.Child("Donations").OnceAsync<DonationModel>();
             var existing = donations.FirstOrDefault(d => d.Object.M_PaymentId == donation.M_PaymentId);
 
             if (existing != null)
             {
-                await _firebaseClient.Child("Donations").Child(existing.Key).PutAsync(donation);
+                await _firebaseClient.Child("Donations").Child(existing.Key).PatchAsync(data); // ✅ Use PatchAsync to update fields without overwriting
             }
             else
             {
-                // fallback
                 await SaveDonation(donation);
             }
         }
+
 
 
 
