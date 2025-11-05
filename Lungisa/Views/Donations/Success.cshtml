@@ -3,6 +3,7 @@
 @{
     ViewBag.Title = "Donation Successful";
     Layout = null;
+    var message = TempData["Message"] as string; // get the message from TempData
 }
 
 <!DOCTYPE html>
@@ -38,6 +39,13 @@
     <section class="hero" style="text-align:center; padding:100px 20px;">
         <div class="hero-content">
             <h1 style="color:#5cb85c;">Donation Successful</h1>
+
+            @* Display dynamic message from TempData *@
+            @if (!string.IsNullOrEmpty(message))
+            {
+                <p style="font-weight:bold; color:#5cb85c;">@message</p>
+            }
+
             <p>Thank you for your generosity! Your donation will help us continue our work and impact lives.</p>
             <a class="btn-volunteer" href="/Home/Index" style="margin-top:20px;">Back to Home</a>
         </div>

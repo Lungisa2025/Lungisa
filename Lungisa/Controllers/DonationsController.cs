@@ -53,8 +53,8 @@ namespace Lungisa.Controllers
             {
                 ["merchant_id"] = _config["PayFastSettings:MerchantId"],
                 ["merchant_key"] = _config["PayFastSettings:MerchantKey"],
-                ["return_url"] = _config["PayFastSettings:ReturnUrl"],
-                ["cancel_url"] = _config["PayFastSettings:CancelUrl"],
+                ["return_url"] = $"{_config["PayFastSettings:ReturnUrl"]}?m_payment_id={mPaymentId}",
+                ["cancel_url"] = $"{_config["PayFastSettings:CancelUrl"]}?m_payment_id={mPaymentId}",
                 ["notify_url"] = _config["PayFastSettings:NotifyUrl"],
                 ["name_first"] = model.FirstName,
                 ["name_last"] = model.LastName,
@@ -140,50 +140,89 @@ namespace Lungisa.Controllers
 
 
 
+        /*
+                [HttpGet]
+                public async Task<IActionResult> Success()
+                {
+                    var pendingDonationId = HttpContext.Session.GetString("PendingDonationId");
+                    if (!string.IsNullOrEmpty(pendingDonationId))
+                    {
+                        var donation = await _firebase.GetDonationByMPaymentId(pendingDonationId);
+                        if (donation != null)
+                        {
+                            donation.Status = "Success"; // mark as successful
+                            donation.Timestamp = DateTime.UtcNow;
+                            await _firebase.UpdateDonation(donation);
+                        }
+
+                        HttpContext.Session.Remove("PendingDonationId");
+                    }
+
+                    TempData["Message"] = "Thank you! Your donation was successful.";
+                    return RedirectToAction("Success", "Donations");
+                }
+
+
+
+                [HttpGet]
+                public async Task<IActionResult> Cancel()
+                {
+                    var pendingDonationId = HttpContext.Session.GetString("PendingDonationId");
+                    if (!string.IsNullOrEmpty(pendingDonationId))
+                    {
+                        var donation = await _firebase.GetDonationByMPaymentId(pendingDonationId);
+                        if (donation != null)
+                        {
+                            donation.Status = "Failed"; // mark as canceled
+                            donation.Timestamp = DateTime.UtcNow;
+                            await _firebase.UpdateDonation(donation);
+                        }
+
+                        HttpContext.Session.Remove("PendingDonationId");
+                    }
+
+                    TempData["Message"] = "You canceled the payment.";
+                    return RedirectToAction("Cancel", "Donations");
+                }*/
 
         [HttpGet]
-        public async Task<IActionResult> Success()
+        public async Task<IActionResult> Success(string m_payment_id)
         {
-            var pendingDonationId = HttpContext.Session.GetString("PendingDonationId");
-            if (!string.IsNullOrEmpty(pendingDonationId))
+            if (!string.IsNullOrEmpty(m_payment_id))
             {
-                var donation = await _firebase.GetDonationByMPaymentId(pendingDonationId);
+                var donation = await _firebase.GetDonationByMPaymentId(m_payment_id);
                 if (donation != null)
                 {
-                    donation.Status = "Success"; // mark as successful
+                    donation.Status = "Success";
                     donation.Timestamp = DateTime.UtcNow;
                     await _firebase.UpdateDonation(donation);
                 }
-
-                HttpContext.Session.Remove("PendingDonationId");
             }
 
             TempData["Message"] = "Thank you! Your donation was successful.";
-            return RedirectToAction("Index", "Home");
+            return View("Success"); // goes to Views/Donations/Success.cshtml
         }
 
-
-
         [HttpGet]
-        public async Task<IActionResult> Cancel()
+        public async Task<IActionResult> Cancel(string m_payment_id)
         {
-            var pendingDonationId = HttpContext.Session.GetString("PendingDonationId");
-            if (!string.IsNullOrEmpty(pendingDonationId))
+            if (!string.IsNullOrEmpty(m_payment_id))
             {
-                var donation = await _firebase.GetDonationByMPaymentId(pendingDonationId);
+                var donation = await _firebase.GetDonationByMPaymentId(m_payment_id);
                 if (donation != null)
                 {
-                    donation.Status = "Failed"; // mark as canceled
+                    donation.Status = "Failed";
                     donation.Timestamp = DateTime.UtcNow;
                     await _firebase.UpdateDonation(donation);
                 }
-
-                HttpContext.Session.Remove("PendingDonationId");
             }
 
             TempData["Message"] = "You canceled the payment.";
-            return RedirectToAction("Index", "Home");
+            return View("Cancel"); // goes to Views/Donations/Cancel.cshtml
         }
+
+
+
 
 
 

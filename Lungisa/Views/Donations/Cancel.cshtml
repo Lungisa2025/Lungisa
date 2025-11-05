@@ -3,6 +3,7 @@
 @{
     ViewBag.Title = "Donation Cancelled";
     Layout = null;
+    var message = TempData["Message"] as string; // get the message from TempData
 }
 
 <!DOCTYPE html>
@@ -38,6 +39,13 @@
     <section class="hero" style="text-align:center; padding:100px 20px;">
         <div class="hero-content">
             <h1 style="color:#d9534f;">Donation Cancelled</h1>
+
+            @* Display message from TempData if available *@
+            @if (!string.IsNullOrEmpty(message))
+            {
+                <p style="font-weight:bold; color:#d9534f;">@message</p>
+            }
+
             <p>Your donation was not completed. You can try again if you wish.</p>
             <a class="btn-volunteer" href="/Home/Donations" style="margin-top:20px;">Try Again</a>
             <br />
