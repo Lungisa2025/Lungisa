@@ -56,37 +56,31 @@
     </form>
 
     <script>
-            const firebaseConfig = {
-            apiKey: "AIzaSyCpvmanPzoY_Tno21lvGxTKvmnuphjyvcs",
-            authDomain: "lungisa-9d510.firebaseapp.com",
-            };
-            firebase.initializeApp(firebaseConfig);
-            const auth = firebase.auth();
+        const firebaseConfig = {
+            apiKey: "@ViewBag.Firebase.ApiKey",
+            authDomain: "@ViewBag.Firebase.AuthDomain",
+            projectId: "@ViewBag.Firebase.ProjectId",
+            storageBucket: "@ViewBag.Firebase.StorageBucket",
+            messagingSenderId: "@ViewBag.Firebase.MessagingSenderId",
+            appId: "@ViewBag.Firebase.AppId",
+            databaseURL: "@ViewBag.Firebase.DatabaseUrl"
+        };
 
-            async function loginEmail() {
-                try {
-                    const email = document.getElementById('email').value;
-                    const password = document.getElementById('password').value;
-                    const userCredential = await auth.signInWithEmailAndPassword(email, password);
-                    const token = await userCredential.user.getIdToken();
-                    document.getElementById('idToken').value = token;
-                    document.getElementById('tokenForm').submit();
-                } catch (err) {
-                    document.getElementById('error').innerText = err.message;
-                }
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+
+        async function loginEmail() {
+            try {
+                const email = document.getElementById('email').value;
+                const password = document.getElementById('password').value;
+                const userCredential = await auth.signInWithEmailAndPassword(email, password);
+                const token = await userCredential.user.getIdToken();
+                document.getElementById('idToken').value = token;
+                document.getElementById('tokenForm').submit();
+            } catch (err) {
+                document.getElementById('error').innerText = err.message;
             }
-
-            /*        async function loginGoogle() {
-                        try {
-                            const provider = new firebase.auth.GoogleAuthProvider();
-                            const result = await auth.signInWithPopup(provider);
-                            const token = await result.user.getIdToken();
-                            document.getElementById('idToken').value = token;
-                            document.getElementById('tokenForm').submit();
-                        } catch (err) {
-                            document.getElementById('error').innerText = err.message;
-                        }
-                    }*/
+        }
     </script>
 
     @*        @if (ViewBag.Error != null)

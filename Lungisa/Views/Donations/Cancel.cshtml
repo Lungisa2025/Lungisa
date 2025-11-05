@@ -1,7 +1,49 @@
-﻿@{
+﻿@model Lungisa.Models.HomeViewModel
+
+@{
     ViewBag.Title = "Donation Cancelled";
+    Layout = null;
 }
 
-<h2>Donation Cancelled</h2>
-<p>Your donation was not completed. You can try again if you wish.</p>
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>Donation Cancelled</title>
+    <link rel="stylesheet" href="~/Content/home.css" />
+    <link rel="stylesheet" href="~/css/home.css" />
+    <link rel="stylesheet" href="~/css/site.css" />
+    <link rel="icon" type="image/png" sizes="32x32" href="~/Content/Images/LOGOLungisa.png">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet" />
+</head>
+<body>
+    <header>
+        <a class="logo" href="/"><img src="~/Content/Images/LungisaLogo.png" alt="Lungisa Logo"></a>
+        <nav id="main-nav" class="main-nav">
+            <ul>
+                <li><a href="/Home/Index" class="nav-link active">HOME</a></li>
+                <li><a href="/Home/About" class="nav-link">ABOUT</a></li>
+                <li><a href="/Home/Services" class="nav-link">SERVICES</a></li>
+                <li><a href="/Home/News" class="nav-link">LATEST NEWS</a></li>
+                <li><a href="/Home/Contact" class="nav-link">CONTACT</a></li>
+            </ul>
+        </nav>
+        <div class="header-buttons">
+            <a class="btn-donate" href="/Home/Donations">DONATE</a>
+            <a class="btn-admin" href="/Login/Index">ADMIN LOGIN</a>
+        </div>
+    </header>
 
+    <section class="hero" style="text-align:center; padding:100px 20px;">
+        <div class="hero-content">
+            <h1 style="color:#d9534f;">Donation Cancelled</h1>
+            <p>Your donation was not completed. You can try again if you wish.</p>
+            <a class="btn-volunteer" href="/Home/Donations" style="margin-top:20px;">Try Again</a>
+            <br />
+            <a href="/Home/Index" style="display:inline-block; margin-top:10px;">Back to Home</a>
+        </div>
+    </section>
+
+</body>
+</html>

@@ -1,3 +1,4 @@
+using Lungisa.Models;
 using Lungisa.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -17,6 +18,8 @@ builder.Services.AddSession(options =>
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
 });
+builder.Services.Configure<FirebaseSettings>(builder.Configuration.GetSection("Firebase"));
+
 
 var app = builder.Build();
 

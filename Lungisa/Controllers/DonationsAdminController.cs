@@ -24,6 +24,21 @@ namespace Lungisa.Controllers
             this.emailHelper = emailHelper;
         }
 
+        [HttpGet]
+        public async Task<IActionResult> AdminDonations()
+        {
+            var donationsWithKeys = await firebase.GetDonationsWithKeys();
+            var donations = donationsWithKeys
+                                .Select(d => d.Donation)
+                                .OrderByDescending(d => d.Timestamp)
+                                .ToList();
+
+            ViewBag.Success = TempData["Success"];
+            ViewBag.Error = TempData["Error"];
+
+            return View("~/Views/Admin/DonationsAdmin.cshtml", donations);
+        }
+
         // GET: /DonationsAdmin/Index
         // Loads the Donations management page and retrieves all donations
         [HttpGet]

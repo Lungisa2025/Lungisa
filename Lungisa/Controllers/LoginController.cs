@@ -3,24 +3,29 @@
 // Handles sign-in and sign-out flows for administrators.
 
 
+using Lungisa.Models;
 using Lungisa.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 
 public class LoginController : Controller
 {
     // Relies on Firebase Authentication for credential verification.
     private readonly FirebaseService _firebase;
+    private readonly FirebaseSettings _firebaseSettings;
 
     /// Constructor – receives FirebaseService via dependency injection.
-    public LoginController(FirebaseService firebase)
+    public LoginController(FirebaseService firebase, IOptions<FirebaseSettings> firebaseSettings)
     {
         _firebase = firebase;
+        _firebaseSettings = firebaseSettings.Value;
     }
 
     [HttpGet]
     // Displays the login page (GET /Login/Index).
     public ActionResult Index()
     {
+        ViewBag.Firebase = _firebaseSettings;
         // Returns the Login page
         return View(); 
     }

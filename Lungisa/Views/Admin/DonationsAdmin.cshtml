@@ -64,15 +64,17 @@
     <section class="section-card2">
         <h1>Donations Dashboard</h1>
         <div class="table-container">
-            <table>
-                <thead class="table-dark">
+            <table class="table table-striped">
+                <thead>
                     <tr>
                         <th>Donor Name</th>
                         <th>Email</th>
-                        <th>Amount</th>
-                        <th>Status</th>
-                        <th>Payment ID</th>
+                        <th>Amount (ZAR)</th>
+
+                        <th>PayFast ID</th>
+                        <th>M_PaymentId</th>
                         <th>Timestamp</th>
+                        <th>Status</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -83,7 +85,11 @@
                             <tr>
                                 <td>@donation.DonorName</td>
                                 <td>@donation.Email</td>
-                                <td>R @donation.Amount?.ToString("0.00")</td>
+                                <td>@donation.Amount.ToString("F2")</td>
+                                <td>@donation.PayFastPaymentId</td>
+                                <td>@donation.M_PaymentId</td>
+                                <td>@donation.Timestamp.ToString("yyyy-MM-dd HH:mm")</td>
+                            
 
                                 <td>
                                     @if (donation.Status == "Success")
@@ -95,8 +101,6 @@
                                         <span class="badge bg-danger">Failed</span>
                                     }
                                 </td>
-                                <td>@donation.PayFastPaymentId</td>
-                                <td>@donation.Timestamp.ToString("yyyy-MM-dd HH:mm:ss")</td>
                             </tr>
                         }
                     }

@@ -38,12 +38,16 @@ namespace Lungisa.Controllers
                 LastName = model.LastName,
                 Email = model.Email,
                 Amount = model.Amount,
-/*                Status = "Pending",*/
+                Status = "Pending",
                 Timestamp = DateTime.UtcNow,
                 M_PaymentId = mPaymentId
             };
 
             await _firebase.SaveDonation(pendingDonation);
+
+            // Store donation session to track current donation
+            HttpContext.Session.SetString("PendingDonationId", mPaymentId);
+
 
             var pfData = new SortedDictionary<string, string>
             {
@@ -137,8 +141,51 @@ namespace Lungisa.Controllers
 
 
 
-        [HttpGet] public IActionResult Success() => View();
-        [HttpGet] public IActionResult Cancel() => View();
+        [HttpGet]
+        public async Task<IActionResult> Success()
+        {
+            var pendingDonationId = HttpContext.Session.GetString("PendingDonationId");
+            if (!string.IsNullOrEmpty(pendingDonationId))
+            {
+                var donation = await _firebase.GetDonationByMPaymentId(pendingDonationId);
+                if (donation != null)
+                {
+                    donation.Status = "Success"; // mark as successful
+                    donation.Timestamp = DateTime.UtcNow;
+                    await _firebase.UpdateDonation(donation);
+                }
+
+                HttpContext.Session.Remove("PendingDonationId");
+            }
+
+            TempData["Message"] = "Thank you! Your donation was successful.";
+            return RedirectToAction("Index", "Home");
+        }
+
+
+
+        [HttpGet]
+        public async Task<IActionResult> Cancel()
+        {
+            var pendingDonationId = HttpContext.Session.GetString("PendingDonationId");
+            if (!string.IsNullOrEmpty(pendingDonationId))
+            {
+                var donation = await _firebase.GetDonationByMPaymentId(pendingDonationId);
+                if (donation != null)
+                {
+                    donation.Status = "Failed"; // mark as canceled
+                    donation.Timestamp = DateTime.UtcNow;
+                    await _firebase.UpdateDonation(donation);
+                }
+
+                HttpContext.Session.Remove("PendingDonationId");
+            }
+
+            TempData["Message"] = "You canceled the payment.";
+            return RedirectToAction("Index", "Home");
+        }
+
+
 
         private string GeneratePayfastSignature(SortedDictionary<string, string> data, string passphrase)
         {
