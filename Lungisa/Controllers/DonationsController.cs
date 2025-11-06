@@ -222,10 +222,6 @@ namespace Lungisa.Controllers
         }
 
 
-
-
-
-
         private string GeneratePayfastSignature(SortedDictionary<string, string> data, string passphrase)
         {
             var sb = new StringBuilder();
