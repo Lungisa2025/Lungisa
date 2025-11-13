@@ -81,5 +81,45 @@ namespace Lungisa.Controllers
             // Redirect back to the Volunteers page to display updated messages
             return RedirectToAction("Volunteers");
         }
+        [HttpPost]
+        public async Task<ActionResult> SendEmailToSelected([FromForm] string[] selectedEmails)
+        {
+            if (selectedEmails == null || selectedEmails.Length == 0)
+            {
+                TempData["Error"] = "No volunteers selected!";
+                return RedirectToAction("Volunteers");
+            }
+
+            try
+            {
+                // Fetch all volunteers to get their names
+                var allVolunteers = await firebase.GetAllVolunteers() ?? new List<Lungisa.Models.VolunteerModel>();
+
+                string subject = "Volunteering Opportunities";
+                string bodyTemplate = "Dear {0},\n\nThank you for volunteering with Lungisa NPO. " +
+                                      "We have new opportunities available and would love your help!\n\n" +
+                                      "Best Regards,\nLungisa NPO Team";
+
+                foreach (var email in selectedEmails)
+                {
+                    var volunteer = allVolunteers.FirstOrDefault(v => v.Email == email);
+                    if (volunteer != null)
+                    {
+                        string body = string.Format(bodyTemplate, volunteer.FullName);
+                        await emailHelper.SendEmailAsync(volunteer.Email, volunteer.FullName, subject, body);
+                    }
+                }
+
+                TempData["Success"] = "Emails sent to selected volunteers successfully!";
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = "Error sending emails: " + ex.Message;
+            }
+
+            return RedirectToAction("Volunteers");
+        }
+
+
     }
 }

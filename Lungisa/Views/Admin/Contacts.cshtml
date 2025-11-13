@@ -69,40 +69,108 @@
         {
             <p style="color:red">@TempData["Error"]</p>
         }
+
         <div class="table-container">
-            <table border="1" cellpadding="5" cellspacing="0">
+            <table border="1" cellpadding="5" cellspacing="0" style="width:100%; border-collapse: collapse;">
                 <thead>
                     <tr>
+                        <th><input type="checkbox" id="select-all" /></th> <!-- Select all -->
                         <th>Name</th>
                         <th>Email</th>
                         <th>Subject</th>
                         <th>Message</th>
                         <th>Date</th>
-                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach (var contact in Model)
                     {
                         <tr>
+                            <td>
+                                <input type="checkbox" name="selectedEmails" value="@contact.Email" />
+                            </td>
                             <td>@contact.FirstName @contact.LastName</td>
                             <td>@contact.Email</td>
                             <td>@contact.Subject</td>
                             <td>@contact.Message</td>
                             <td>@contact.Date</td>
-                            <td>
-                                <form action="/Contacts/SendContactEmail" method="post" style="display:inline;">
-                                    <input type="hidden" name="email" value="@contact.Email" />
-                                    <input type="hidden" name="name" value="@contact.FirstName" />
-                                    <button class="btn-sendEmail" type="submit">Send Email</button>
-                                </form>
-                            </td>
                         </tr>
                     }
                 </tbody>
             </table>
         </div>
+        <!-- Button to open modal for sending message to selected contacts -->
+        <button class="btn-sendSelectedContacts" onclick="openBulkReplyModal()">Send Message to Selected</button>
     </section>
+
+    <!-- ---------- REPLY MODAL ---------- -->
+    <div id="replyModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%;
+                           background:rgba(0,0,0,0.5); justify-content:center; align-items:center;">
+        <div style="background:#fff; padding:20px; border-radius:10px; width:400px; position:relative;">
+            <span style="position:absolute; top:10px; right:15px; cursor:pointer;"
+                  onclick="closeReplyModal()">X</span>
+            <h3>Send Reply</h3>
+            <form method="post" action="/Contacts/SendCustomReply">
+                <input type="hidden" name="email" id="replyEmail" />
+                <input type="hidden" name="name" id="replyName" />
+                <textarea name="message" placeholder="Type your message here..."
+                          style="width:100%; height:150px; margin-top:10px;" required></textarea>
+                <button type="submit" class="btn-sendEmail" style="margin-top:10px;">Send</button>
+            </form>
+        </div>
+    </div>
+    <div id="bulkReplyModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%;
+                                background:rgba(0,0,0,0.5); justify-content:center; align-items:center;">
+        <div style="background:#fff; padding:20px; border-radius:10px; width:400px; position:relative;">
+            <span style="position:absolute; top:10px; right:15px; cursor:pointer;" onclick="closeBulkReplyModal()">X</span>
+            <h3>Send Message to Selected Contacts</h3>
+            <form method="post" action="/Contacts/SendBulkReply">
+                <input type="hidden" name="emails" id="bulkEmails" />
+                <textarea name="message" placeholder="Type your message here..."
+                          style="width:100%; height:150px; margin-top:10px;" required></textarea>
+                <button type="submit" class="btn-sendEmail" style="margin-top:10px;">Send</button>
+            </form>
+        </div>
+    </div>
+
+
+    <script>
+        function openReplyModal(email, name) {
+            document.getElementById('replyEmail').value = email;
+            document.getElementById('replyName').value = name;
+            document.getElementById('replyModal').style.display = 'flex';
+        }
+
+        function closeReplyModal() {
+            document.getElementById('replyModal').style.display = 'none';
+        }
+        document.getElementById('select-all').addEventListener('change', function () {
+            const checkboxes = document.querySelectorAll('input[name="selectedEmails"]');
+            checkboxes.forEach(cb => cb.checked = this.checked);
+        });
+
+        function openBulkReplyModal() {
+            const selected = Array.from(document.querySelectorAll('input[name="selectedEmails"]:checked'))
+                .map(cb => cb.value);
+
+            if (selected.length === 0) {
+                alert("Please select at least one contact.");
+                return;
+            }
+
+            document.getElementById('bulkEmails').value = selected.join(',');
+            document.getElementById('bulkReplyModal').style.display = 'flex';
+        }
+
+        function closeBulkReplyModal() {
+            document.getElementById('bulkReplyModal').style.display = 'none';
+        }
+
+
+
+    </script>
+
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
             integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
             crossorigin="anonymous">

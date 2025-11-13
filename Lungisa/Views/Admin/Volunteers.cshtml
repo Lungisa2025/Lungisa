@@ -62,7 +62,8 @@
     <br />
     <section class="section-card2">
         <h1>Volunteers</h1>
-        </br>
+        <br />
+
         @if (TempData["Success"] != null)
         {
             <p style="color:green">@TempData["Success"]</p>
@@ -71,42 +72,67 @@
         {
             <p style="color:red">@TempData["Error"]</p>
         }
+
+        <!-- ---------- BUTTONS TO SEND EMAILS ---------- -->
+        <div class="volunteer-buttons-container">
+            <!-- Send Email to All Volunteers -->
+            <form method="post" action="@Url.Action("SendEmailToAll", "Volunteers")" class="volunteer-btn-form">
+                <button class="btn-send-volunteers" type="submit" onclick="return confirm('Send emails to all volunteers?');">
+                    Send Email to All
+                </button>
+            </form>
+
+            <!-- Send Email to Selected Volunteers -->
+            <form method="post" action="@Url.Action("SendEmailToSelected", "Volunteers")" class="volunteer-btn-form">
+                <button class="btn-send-volunteers" type="submit" onclick="return confirm('Send emails to selected volunteers?');">
+                    Send Email to Selected
+                </button>
+            </form>
+        </div>
+
         <div class="table-container">
-            <table border="1" cellpadding="5" style="border-collapse:collapse; width:100%">
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Email</th>
-                        <th>Phone</th>
-                        <th>Availability</th>
-                        <th>Role Preference</th>
-                        <th>Date</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var v in Model)
-                    {
+            <form method="post" action="@Url.Action("SendEmailToSelected", "Volunteers")">
+                <table border="1" cellpadding="5" style="border-collapse:collapse; width:100%">
+                    <thead>
                         <tr>
-                            <td>@v.FullName</td>
-                            <td>@v.Email</td>
-                            <td>@v.Phone</td>
-                            <td>@v.Availability</td>
-                            <td>@v.RolePreference</td>
-                            <td>@v.Date</td>
-                            <td>
-                                <form method="post" action="@Url.Action("SendVolunteerEmail", "Volunteers")">
-                                    <input type="hidden" name="email" value="@v.Email" />
-                                    <input type="hidden" name="name" value="@v.FullName" />
-                                    <button class="btn-send" type="submit">Send Email</button>
-                                </form>
-                            </td>
+                            <th><input type="checkbox" id="select-all" /></th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Phone</th>
+                            <th>Availability</th>
+                            <th>Role Preference</th>
+                            <th>Date</th>
+                            <th>Actions</th>
                         </tr>
-                    }
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        @foreach (var v in Model)
+                        {
+                            <tr>
+                                <td>
+                                    <input type="checkbox" name="selectedEmails" value="@v.Email" />
+                                </td>
+                                <td>@v.FullName</td>
+                                <td>@v.Email</td>
+                                <td>@v.Phone</td>
+                                <td>@v.Availability</td>
+                                <td>@v.RolePreference</td>
+                                <td>@v.Date</td>
+                                <td>
+                                    <form method="post" action="@Url.Action("SendVolunteerEmail", "Volunteers")">
+                                        <input type="hidden" name="email" value="@v.Email" />
+                                        <input type="hidden" name="name" value="@v.FullName" />
+                                        <button class="btn-send" type="submit">Send Email</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </form>
         </div>
     </section>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
             integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
             crossorigin="anonymous">
@@ -123,5 +149,13 @@
             });
         })();
     </script>
+    <script>
+        // Select/Deselect all checkboxes
+        document.getElementById('select-all').addEventListener('change', function () {
+            const checkboxes = document.querySelectorAll('input[name="selectedEmails"]');
+            checkboxes.forEach(cb => cb.checked = this.checked);
+        });
+    </script>
+
 </body>
 </html>

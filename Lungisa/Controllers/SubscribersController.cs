@@ -87,5 +87,28 @@ namespace Lungisa.Controllers
             // Redirect back to the Subscribers page to show updated messages
             return RedirectToAction("Subscribers");
         }
+        [HttpPost]
+        public async Task<ActionResult> NotifyAllSubscribers(string message)
+        {
+            try
+            {
+                var subscribers = await firebase.GetAllSubscribers() ?? new List<Lungisa.Models.SubscriberModel>();
+
+                string subject = "Lungisa Update!";
+                foreach (var sub in subscribers)
+                {
+                    await emailHelper.SendEmailAsync(sub.Email, sub.Email, subject, $"Dear subscriber,\n\n{message}\n\nBest Regards,\nLungisa NPO Team");
+                }
+
+                TempData["Success"] = "Message sent to all subscribers successfully!";
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = "Error sending emails: " + ex.Message;
+            }
+
+            return RedirectToAction("Subscribers");
+        }
+
     }
 }

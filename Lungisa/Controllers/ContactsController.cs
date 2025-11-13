@@ -81,5 +81,48 @@ namespace Lungisa.Controllers
             // Redirect back to the Contacts page to show updated messages
             return RedirectToAction("Contacts");
         }
+        [HttpPost]
+        public async Task<ActionResult> SendCustomReply(string email, string name, string message)
+        {
+            try
+            {
+                string subject = "Reply from Lungisa NPO";
+
+                string body = $"Dear {name},\n\n{message}\n\nBest Regards,\nLungisa NPO Team";
+
+                await emailHelper.SendEmailAsync(email, name, subject, body);
+
+                TempData["Success"] = "Custom reply sent successfully!";
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = "Error sending email: " + ex.Message;
+            }
+
+            return RedirectToAction("Contacts");
+        }
+        [HttpPost]
+        public async Task<ActionResult> SendBulkReply(string emails, string message)
+        {
+            try
+            {
+                string subject = "Reply from Lungisa NPO";
+                var emailList = emails.Split(',');
+
+                foreach (var email in emailList)
+                {
+                    await emailHelper.SendEmailAsync(email, "", subject, $"Dear user,\n\n{message}\n\nBest Regards,\nLungisa NPO Team");
+                }
+
+                TempData["Success"] = "Message sent to selected contacts successfully!";
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = "Error sending emails: " + ex.Message;
+            }
+
+            return RedirectToAction("Contacts");
+        }
+
     }
 }
