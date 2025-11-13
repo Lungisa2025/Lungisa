@@ -72,9 +72,12 @@
                     <label>Body</label>
                     <textarea name="body" rows="8" required>@(articleToEdit?.Body ?? "")</textarea>
                 </div>
-
                 <div class="form-group">
                     <label>Featured Image</label>
+                    <br />
+                    <img src="@(string.IsNullOrEmpty(articleToEdit?.ImageUrl) ? "/Content/Images/newsletter.png" : articleToEdit.ImageUrl)"
+                         alt="Current Image" width="150" style="margin-bottom: 10px; border: 1px solid #ccc;" />
+                    <br />
                     <input type="file" name="image" accept="image/*" />
                 </div>
 

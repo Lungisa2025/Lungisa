@@ -96,6 +96,7 @@ namespace Lungisa.Controllers
             return View("~/Views/Admin/NewsAdmin.cshtml", firebaseArticle);
         }
 
+
         // UPDATE NEWS ARTICLE
         [HttpPost]
         public async Task<ActionResult> UpdateNews(string articleKey, string title, string summary, string body, IFormFile image)
@@ -105,12 +106,18 @@ namespace Lungisa.Controllers
 
             if (existingArticle == null) return NotFound();
 
-            // Always start with the default
+            // Start with default image
             string imageUrl = "/Content/Images/newsletter.png";
 
-            // If an image was previously uploaded, keep it (unless a new one is added)
+            // Use existing image only if it's not null/empty AND the file actually exists
             if (!string.IsNullOrEmpty(existingArticle.ImageUrl))
-                imageUrl = existingArticle.ImageUrl;
+            {
+                string physicalPath = Path.Combine(_env.WebRootPath, existingArticle.ImageUrl.TrimStart('/').Replace('/', Path.DirectorySeparatorChar));
+                if (System.IO.File.Exists(physicalPath))
+                {
+                    imageUrl = existingArticle.ImageUrl;
+                }
+            }
 
             // If a new image is uploaded, overwrite the imageUrl
             if (image != null && image.Length > 0)
@@ -138,5 +145,6 @@ namespace Lungisa.Controllers
             TempData["Success"] = "✅ News article updated successfully!";
             return RedirectToAction("Index");
         }
+
     }
 }
