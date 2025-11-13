@@ -12,11 +12,45 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width" />
     <title>Donation Cancelled</title>
-    <link rel="stylesheet" href="~/Content/home.css" />
     <link rel="stylesheet" href="~/css/home.css" />
     <link rel="stylesheet" href="~/css/site.css" />
     <link rel="icon" type="image/png" sizes="32x32" href="~/Content/Images/LOGOLungisa.png">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet" />
+    <style>
+        html, body {
+            height: 100%; /* ensure body fills the viewport */
+            margin: 0; /* remove default margin */
+        }
+
+        .hero {
+            display: flex;
+            flex-direction: column;
+            justify-content: center; /* vertical center */
+            align-items: center; /* horizontal center */
+            text-align: center; /* center text */
+            padding: 20px;
+            min-height: 100vh; /* fill the viewport height */
+        }
+
+
+        .hero-content h1 {
+            color: #d9534f;
+            text-align: center; /* center text */
+        }
+
+        .hero-content .message {
+            font-weight: bold;
+            color: #d9534f;
+            text-align: center; /* center text */
+        }
+
+        .hero-content p,
+        .hero-content a {
+            margin-top: 10px;
+            text-align: center; /* center text */
+        }
+
+    </style>
 </head>
 <body>
     <header>
@@ -36,22 +70,23 @@
         </div>
     </header>
 
-    <section class="hero" style="text-align:center; padding:100px 20px;">
+    <section class="hero">
         <div class="hero-content">
-            <h1 style="color:#d9534f;">Donation Cancelled</h1>
+            <h1>Donation Cancelled</h1>
 
-            @* Display message from TempData if available *@
             @if (!string.IsNullOrEmpty(message))
             {
-                <p style="font-weight:bold; color:#d9534f;">@message</p>
+                <p class="message">@message</p>
             }
 
             <p>Your donation was not completed. You can try again if you wish.</p>
-            <a class="btn-volunteer" href="/Home/Donations" style="margin-top:20px;">Try Again</a>
+            <a class="btn-volunteer" href="/Home/Donations">Try Again</a>
             <br />
-            <a href="/Home/Index" style="display:inline-block; margin-top:10px;">Back to Home</a>
+            <a href="/Home/Index">Back to Home</a>
         </div>
     </section>
+
+
 
 </body>
 </html>

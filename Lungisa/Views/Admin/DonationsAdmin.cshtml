@@ -19,7 +19,7 @@
     <meta name="viewport" content="width=device-width" />
 
     <!-- Title -->
-    <title>Volunteers</title>
+    <title>Donation Management</title>
 
     <!-- Links -->
     <link rel="stylesheet" href="~/Content/formStyle.css" />
@@ -71,7 +71,7 @@
                         <th>Email</th>
                         <th>Amount (ZAR)</th>
 
-                        <th>PayFast ID</th>
+@*                         <th>PayFast ID</th> *@
                         <th>M_PaymentId</th>
                         <th>Timestamp</th>
                         <th>Status</th>
@@ -86,7 +86,7 @@
                                 <td>@donation.DonorName</td>
                                 <td>@donation.Email</td>
                                 <td>@donation.Amount.ToString("F2")</td>
-                                <td>@donation.PayFastPaymentId</td>
+@*                                 <td>@donation.PayFastPaymentId</td> *@
                                 <td>@donation.M_PaymentId</td>
                                 <td>@donation.Timestamp.ToString("yyyy-MM-dd HH:mm")</td>
                             
